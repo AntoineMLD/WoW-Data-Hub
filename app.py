@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, session, request 
+from flask import Flask, jsonify, session, request, render_template
 import requests 
 import os 
 from dotenv import load_dotenv
@@ -63,7 +63,8 @@ def get_realms():
             try:
                 # décode la réponse JSON et retourne les données
                 data = response.json()
-                return jsonify(data)
+                realms = data.get('connected_realms', [])
+                return render_template('realms.html', realms=realms)
             except requests.exceptions.JSONDecodeError:
                 return jsonify({"error": 'Failed to decode JSON response', "details" : response.text}), response.status_code
         else:
@@ -90,7 +91,9 @@ def get_mythic_dungeons():
         if response.status_code == 200:
             try:
                 data = response.json()
-                return jsonify(data)
+                dungeons = data.get('dungeons', [])
+                return render_template('mythic_dungeons.html', dungeons=dungeons)
+                
             except requests.exceptions.JSONDecodeError:
                 return jsonify({"error": "Failed to deconde Json response", "details": response.text}), response.status_code
         else:
